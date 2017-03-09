@@ -1,0 +1,475 @@
+<!-- 
+
+Tetris Clock V1.0
+__________________________
+
+MIT License
+
+Copyright (c) 2017 Matt Butler
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+__________________________
+
+Find it on github https://github.com/undefined-studios/TetrisClock
+
+-->
+<html>
+	<head>
+		<style>
+			* {
+				-webkit-transition: all 0.25s ease;
+				-moz-transition: all 0.25s ease;
+				-ms-transition: all 0.25s ease;
+				-o-transition: all 0.25s ease;
+			}
+		
+			body {
+				margin: 0;
+				background-color: black;
+			}
+			
+			.block {
+				background-color: black;
+				position: absolute;
+			}
+			
+			.msg {
+				color: white;
+				text-align: center;
+				margin-top: 25%;
+				font-family: verdana;
+			}
+
+			.github {
+				position: absolute;
+				left: 10px;
+				bottom: 10px;
+				width: 35px;
+				height: 35px;
+				opacity: 0.25;
+			}
+
+			.github:hover {
+				opacity: 1;
+			}
+		</style>
+	</head>
+	<body onload="checkForWait()" onresize="javscript:location.reload()">
+		<a href="https://github.com/undefined-studios/TetrisClock"><img src="https://undefined-studios.com/open-source/TetrisClock/images/github.png" class="github"></a>
+		<script>
+		
+			//check onload if next minute is within 15 seconds. If so, wait to display digits to avoid wiping conflict
+			var isWaiting = false;
+			function checkForWait(){
+				var date = new Date();
+				if (date.getSeconds() >= 45){
+					isWaiting = true;
+					var msg = document.createElement('h1');
+					msg.className = "msg";
+					msg.innerHTML = "Waiting for next minute.. " + (60 - date.getSeconds()) + "s";
+					msg.id = "msg";
+					document.body.appendChild(msg);
+				}else{
+					isWaiting = false;	
+				}
+			}
+			
+			//possible 4 x 4 block patterns to be displayed
+			var sectionPatterns = [ 
+				[ [11,13,14,15], [3,6,7,10], [5,8,9,12], [0,1,2,4] ],
+				[ [3,7,11,15], [2,6,9,10], [0,1,4,5], [8,12,13,14] ],
+				[ [0,1,2,3], [10,11,14,15], [5,6,7,9], [4,8,12,13] ],
+				[ [3,7,11,15], [5,6,10,14], [0,4,1,2], [8,12,9,13] ],
+				[ [2,3,7,11], [10,13,14,15], [0,1,5,6], [4,8,12,9] ],
+				[ [9,10,7,11], [12,13,14,15], [1,2,3,6], [0,4,8,5] ],
+				[ [3,7,11,15], [5,9,6,10], [0,4,1,2], [8,12,13,14] ],
+				[ [13,14,11,15], [6,10,3,7], [5,9,8,12], [0,4,1,2] ],
+				[ [2,6,3,7], [9,10,11,15], [0,4,1,5], [8,12,13,14] ],
+				[ [7,11,14,15], [6,10,9,13], [1,2,3,5], [0,4,8,12] ]
+			];
+
+			//colors for blocks
+			var colors = {
+				c0 : "#c0392b", //red
+				c1 : "#27ae60", //green
+				c2 : "#2980b9", //blue
+				c3 : "#f39c12", //yellow
+				c4 : "#8e44ad", //purple
+				c5 : "#d35400", //orange
+				c6 : "#16a085"  //turquoise
+			}
+			
+			//coordinates to create numbers 0 - 9
+			var numbers = {
+				num0 : [ [0,32],[4,32],[8,32],[12,32],[16,32],[0,28],[16,28],[0,24],[16,24],[0,20],[16,20],[0,16],[16,16],[0,12],[16,12],[0,8],[16,8],[0,4],[16,4],[0,0],[4,0],[8,0],[12,0],[16,0] ],
+				num1 : [ [0,32],[4,32],[8,32],[12,32],[16,32],[8,28],[8,24],[8,20],[8,16],[8,12],[8,8],[8,4],[0,0],[4,0],[8,0] ],
+				num2 : [ [0,32],[4,32],[8,32],[12,32],[16,32],[0,28],[0,24],[0,20],[0,16],[4,16],[8,16],[12,16],[16,16],[16,12],[16,8],[16,4],[0,0],[4,0],[8,0],[12,0],[16,0] ],
+				num3 : [ [0,32],[4,32],[8,32],[12,32],[16,32],[16,28],[16,24],[16,20],[4,16],[8,16],[12,16],[16,16],[16,12],[16,8],[16,4],[0,0],[4,0],[8,0],[12,0],[16,0] ],
+				num4 : [ [16,32],[16,28],[16,24],[16,20],[0,16],[4,16],[8,16],[12,16],[16,16],[0,12],[16,12],[0,8],[16,8],[0,4],[16,4],[0,0],[16,0] ],
+				num5 : [ [0,32],[4,32],[8,32],[12,32],[16,32],[16,28],[16,24],[16,20],[0,16],[4,16],[8,16],[12,16],[16,16],[0,12],[0,8],[0,4],[0,0],[4,0],[8,0],[12,0],[16,0] ],
+				num6 : [ [0,32],[4,32],[8,32],[12,32],[16,32],[0,28],[16,28],[0,24],[16,24],[0,20],[16,20],[0,16],[4,16],[8,16],[12,16],[16,16],[0,12],[0,8],[0,4],[0,0],[4,0],[8,0],[12,0],[16,0] ],
+				num7 : [ [16,32],[16,28],[16,24],[16,20],[16,16],[16,12],[16,8],[0,4],[16,4],[0,0],[4,0],[8,0],[12,0],[16,0] ],
+				num8 : [ [0,32],[4,32],[8,32],[12,32],[16,32],[0,28],[16,28],[0,24],[16,24],[0,20],[16,20],[0,16],[4,16],[8,16],[12,16],[16,16],[0,12],[16,12],[0,8],[16,8],[0,4],[16,4],[0,0],[4,0],[8,0],[12,0],[16,0] ],
+				num9 : [ [16,32],[16,28],[16,24],[16,20],[0,16],[4,16],[8,16],[12,16],[16,16],[0,12],[16,12],[0,8],[16,8],[0,4],[16,4],[0,0],[4,0],[8,0],[12,0],[16,0] ]
+			};
+			
+			var finishedBuildingCount = 0;
+			
+			//check for time change
+			var currentHour = 0;
+			var currentMinutes = 0;
+			var timeTracker = 0;
+			setInterval(function(){
+				
+				if (isWaiting == false){
+					var date = new Date();
+		
+					timeTracker++;
+				
+					if (date.getHours() != currentHour && date.getMinutes() != currentMinutes){
+						//change both
+						currentMinutes = date.getMinutes();
+						currentHour = date.getHours();
+						updateMinuteVisuals();
+						updateHourVisuals();
+					}else if (date.getHours() != currentHour){
+						//change hour only
+						currentHour = date.getHours();
+						updateMinuteVisuals();
+						updateHourVisuals();
+					}else if (date.getMinutes() != currentMinutes){
+						//change minute only
+						currentMinutes = date.getMinutes();
+						updateMinuteVisuals();
+						updateHourVisuals();
+					}else{
+						//nothing has changed
+					}
+					
+					if (timeTracker == 2){
+						//make 0.5 transparent
+						for (var i = 0; i < 8; i++){
+							var dot = document.getElementById('dot' + i);
+							dot.style.opacity = "0.25";
+						}
+						
+						//make 0.0 transparent
+						setTimeout(function(){
+							for (var i = 0; i < 8; i++){
+								var dot = document.getElementById('dot' + i);
+								dot.style.opacity = "1.0";
+							}
+						},100);
+						
+						timeTracker = 0;
+						
+						var randomColor = Math.floor(Math.random() * 7);
+						document.getElementById("counter" + date.getSeconds()).style.borderBottom = "3px solid " + eval("colors.c" + randomColor);
+						
+						if (date.getSeconds() == 59){
+							for (var i = 0; i < 60; i++){
+								document.getElementById("counter" + i).style.borderBottom = "3px solid black";
+							}
+						}
+					}
+				}else {
+					var date = new Date();
+					if (date.getSeconds() < 45){
+						isWaiting = false;
+						document.body.removeChild(document.getElementById('msg'));
+					}else{
+						var msg = document.getElementById('msg');
+						msg.innerHTML = "Waiting for next minute.. " + (60 - date.getSeconds()) + "s";
+					}
+				}
+			},500)
+			
+			//update visuals for hour (blocks 0 and 1)
+			function updateHourVisuals(){
+				if (init == 4){
+					wipeBlock(0);
+					wipeBlock(1);
+				}
+				
+				var adjustedHour = 0;
+				
+				if (currentHour == 0){
+					adjustedHour = 12;
+				}else if (currentHour > 12){
+					adjustedHour = currentHour - 12;
+				}else{
+					adjustedHour = currentHour;
+				}
+
+				if (adjustedHour > 9){
+					createElement(String(adjustedHour).substring(0,1),0);
+					createElement(String(adjustedHour).substring(1,2),1);
+				}else{
+					createElement(0,0);
+					createElement(adjustedHour,1);
+				}
+			}
+			
+			//update the visuals for minutes (blocks 2 and 3)
+			function updateMinuteVisuals(){
+				if (init == 4){
+					wipeBlock(2);
+					wipeBlock(3);
+				}
+				if (currentMinutes < 10){
+					createElement(0,2);
+					createElement(currentMinutes,3);
+				}else{
+					createElement(String(currentMinutes).substring(0,1),2);
+					createElement(String(currentMinutes).substring(1,2),3);
+				}
+			}
+			
+			//wipe block
+			function wipeBlock(spot){
+			
+				function horizontal(h){
+					if (h >= 0){
+						function vertical(v){
+							if (v >= 0){
+								var selectedBlock = document.getElementById("block" + h + "item" + v + "spot" + spot);
+								selectedBlock.style.top = "-50px";
+								selectedBlock.style.backgroundColor = "black";
+								vertical(v - 1);
+							}
+						}
+						vertical(36);
+						horizontal(h - 1);
+					}
+				}
+				horizontal(19);
+				
+				for (var i = 0; i < 8; i++){
+					document.getElementById('dot' + i).style.top = "-50px";
+					document.getElementById('dot' + i).style.backgroundColor = "black";
+				}
+			}
+			
+			//move dots into place for second ticker
+			function moveDots(d){
+				if (d < 8){
+					var downAmount = 0;
+					if (d < 2){
+						downAmount = 0;
+					}else if (d > 1 && d < 4){
+						downAmount = 1;
+					}else if (d > 3 && d < 6){
+						downAmount = 3;
+					}else{
+						downAmount = 4;
+					}
+					document.getElementById("dot" + d).style.top = (window.innerHeight / 2) - (downAmount * size) + "px";
+					if (d == 3){
+						setTimeout(function(){moveDots(d + 1)},150);
+					}else{
+						moveDots(d + 1);
+					}
+				}
+			}
+		
+			//creates the desired digit at the desired spot
+			var init = 0;
+			var size = window.innerWidth / 119;
+			
+			//set max block size
+			if (size > 20){
+				size = 20;
+			}
+			function createElement(digit, spot){
+				//for the first 4 createElement calls, create the blocks to be used by the digit at the spot
+				if (init < 4){
+					for(var i = 0; i < 20; i++){
+						for(var k = 0; k < 37; k++){
+							var block = document.createElement('div');
+							block.className = "block";
+							block.id = "block" + i + "item" + k + "spot" + spot;
+							block.style.width = size-1 + "px";
+							block.style.height = size-1 + "px";
+							block.style.top = "-50px";
+							var overAmount = 0;
+							if (init > 1){
+								overAmount = 15;
+							}else{
+								overAmount = 20;
+							}
+							
+							block.style.left = i * size + (size * (spot * 21)) + (size * overAmount) + "px";
+							document.body.appendChild(block);
+						}
+					}
+					init++;
+				}
+				
+				//on the very first createElement call, create the second ticker dots
+				if (init == 1){
+					//create second counter
+					for (var p = 0; p < 60; p++){
+						var block = document.createElement('div');
+						block.className = "block";
+						block.style.width = size-1;
+						block.style.height = size-1;
+						block.style.bottom = "0px";
+						block.id = "counter" + p;
+						var offset = ((window.innerWidth - (size * 60))/2);
+						block.style.left = (p * size) + offset + "px";
+						document.body.appendChild(block);
+					}
+					
+					//populate second counter initially
+					var newDate = new Date();
+					for (var i = 0; i < newDate.getSeconds() + 1; i++){
+						var randomColor = Math.floor(Math.random() * 7);
+						document.getElementById("counter" + i).style.borderBottom = "3px solid " + eval("colors.c" + randomColor); 
+					}
+					
+					//create separator dots
+					for (var i = 0; i < 8; i++){
+						if (i == 0 || i == 4){
+							var randomColor = Math.floor(Math.random() * 7);
+						}
+						var dot = document.createElement('div');
+						dot.style.backgroundColor = eval("colors.c" + randomColor);
+						dot.className = 'block';
+						dot.style.width = size-1 + "px";
+						dot.style.height = size-1 + "px";
+						dot.id = "dot" + i;
+						dot.style.left = (window.innerWidth / 2) - ((size * (i % 2)) + (size / 2)) + "px";
+						dot.style.top = "-50px";
+						document.body.appendChild(dot);
+					}
+
+					setTimeout(function(){moveDots(0)},5000);
+				}
+				
+				//get data for desired digit
+				var dataStr = "numbers.num" + digit;
+				var data = eval(dataStr);
+				
+				//loop over all coordinates for digit
+				var colorCounter = 0;
+				function loopDigitCoordinates(dc){
+					if (dc < data.length){
+						//loop over all blocks inside of digit coordinate
+						var down = 0;
+						var over = 0;
+						var pattern = Math.floor(Math.random() * sectionPatterns.length);
+						function loopSquare(ls){
+							if (ls < 4){
+								function createBlock(dm){
+									if (dm < 4){
+										//get piece offset in relation to 0-15 square
+										var offsetDown = 0;
+										var offsetOver = 0;
+										var s = sectionPatterns[pattern][ls][dm];
+										//set down offsets
+										if (s < 4) offsetDown = 0;
+										else if (s > 3 && s < 8) offsetDown = 1;
+										else if (s > 7 && s < 12) offsetDown = 2;
+										else offsetDown = 3;
+										//set over offsets
+										if (s == 0 || s == 4 || s == 8 || s == 12) offsetOver = 0;
+										else if (s == 1 || s == 5 || s == 9 || s == 13) offsetOver = 1;
+										else if (s == 2 || s == 6 || s == 10 || s == 14) offsetOver = 2;
+										else offsetOver = 3;
+									
+										//get 4 blocks that form a piece and move them
+										var item = document.getElementById('block' + ((data[dc][0] + offsetDown) ) + 'item' + ((data[dc][1] + offsetOver) ) + 'spot' + spot);
+										item.style.top = ((((window.innerHeight - window.innerHeight * .01) - (size * 36)) / 2) + (((data[dc][1] + offsetOver)) * size)) + "px";
+										item.style.backgroundColor = eval("colors.c" + colorCounter);
+									
+										var increments = [3,7,11,15];
+										if (increments.indexOf(dm) != -1){
+											over++;
+										}
+										down++;
+										if (down == 4) down = 0;
+										createBlock(dm + 1);
+									}else{
+										dm = 0;
+										colorCounter++;
+										if (colorCounter == 7) colorCounter = 0;
+										setTimeout(function(){loopSquare(ls + 1)},100);
+									}
+								}
+								createBlock(0);
+							}else{
+								loopDigitCoordinates(dc + 1);
+							}
+						}
+						setTimeout(function(){loopSquare(0)},100);
+					}else{
+						
+						finishedBuildingCount++;
+						
+						//when 2 digits have finished bulding, move the second ticker dots back into place
+						if (finishedBuildingCount == 2){
+							for(var i = 0; i < 8; i++){
+								if (i == 0 || i == 4){
+									var randomColor = Math.floor(Math.random() * 7);
+								}
+								var dot = document.getElementById('dot' + i);
+								dot.style.backgroundColor = eval("colors.c" + randomColor);
+								setTimeout(function(){moveDots(0)},100);
+							}
+						}
+						
+						//make digits white
+						function place(p){
+							if (p >= 0){
+								function over(o){
+									if (o >= 0){
+										function down(d){
+											if (d >= 0){
+												document.getElementById("block" + o + "item" + d + "spot" + p).style.backgroundColor = "white";
+												down(d - 1);
+											}else{
+												setTimeout(function(){over(o - 1)},10);
+											}
+										}
+										down(36);
+									}else {
+										if (p == 2){
+											for(var i = 0; i < 8; i++){
+												document.getElementById('dot' + i).style.backgroundColor = "white";
+											}
+										}										
+										place(p - 1);
+									}
+								}
+								over(19);
+							}
+						}
+						
+						//when all digits have finished building, turn them all white
+						if (finishedBuildingCount == 4){
+							place(3);
+							finishedBuildingCount = 0;
+						}
+					}
+				}
+				setTimeout(function(){loopDigitCoordinates(0)},1);
+			}
+		</script>
+	</body>
+</html>
