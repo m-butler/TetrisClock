@@ -1,5 +1,5 @@
 # TetrisClock
-#### [DEMO](https://www.google.com) - See Tetris Clock in action
+#### [DEMO](https://undefined-studios.github.io/TetrisClock/) - See Tetris Clock in action
 ---
 ### What Is It
 ###### A fully working clock that presents time using tetris pieces in a gamelike fashion
