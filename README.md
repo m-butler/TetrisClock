@@ -1,5 +1,6 @@
 # TetrisClock
 #### [DEMO](https://undefined-studios.github.io/TetrisClock/) - See Tetris Clock in action
+![Demo Gif](https://undefined-studios.com/open-source/TetrisClock/images/tetris.gif "Demo Gif")
 ---
 ### What Is It
 ###### A fully working clock that presents time using tetris pieces in a gamelike fashion
