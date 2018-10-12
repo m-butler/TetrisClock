@@ -1,5 +1,5 @@
 # TetrisClock
-#### [DEMO](https://undefined-studios.github.io/TetrisClock/) - See Tetris Clock in action
+#### [DEMO](https://m-butler.github.io/TetrisClock/) - See Tetris Clock in action
 ![Demo Gif](https://undefined-studios.com/open-source/TetrisClock/images/tetris.gif "Demo Gif")
 ---
 ### What Is It
@@ -31,4 +31,3 @@
 ###### After all 4 digits have been fully created, they turn to white in a wavelike motion. This is achieved in 2 steps. First, we detect that all have digits have finished building by incrementing a variable until it reaches the total number of digits we have on screen. Once this variable reaches its max, we can then loop through each and every block per digit (starting with the rightmost digit) and fade it to white. The blocks for each digit are changed starting with the top right for the respective digit, going down, and then across. This order creates the illusion of a wave.
 ##### 4. Wipe, Rinse, Repeat
 ###### Once the page detects a change in time, all of the blocks are then wiped from the screen. To avoid heavy lifting for the browser, we are reusing all of these blocks. First, we move each block (yes, all 2,880) to -50px on the Y axis. Second, we "rinse" them of their color and return it to black. This allows for a fading effect when transitioning. Lastly, we repeat the `createElement` call and display the time. 
-> Send suggestions and comments to `hello@undefined-studios.com`
