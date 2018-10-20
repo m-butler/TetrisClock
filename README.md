@@ -1,6 +1,6 @@
 # TetrisClock
 #### [DEMO](https://m-butler.github.io/TetrisClock/) - See Tetris Clock in action
-![Demo Gif](https://undefined-studios.com/open-source/TetrisClock/images/tetris.gif "Demo Gif")
+![Demo Gif](https://github.com/m-butler/TetrisClock/blob/master/images/tetris.gif "Demo Gif")
 ---
 ### What Is It
 ###### A fully working clock that presents time using tetris pieces in a gamelike fashion
@@ -16,13 +16,13 @@
 ###### There are multiple steps that occur when `createElement` is called:
 ###### A. Number Identification
 ###### The entered digit information is retrieved from the `numbers` object. Each property of the object corresponds to a digit 0 - 9 and contains an array of arrays. This data is used to identify "outline coordinates" that will be used to draw a number without knowing each and every one of its 720 coordinates. In the image below, you can see that we only identified 24 coordinates to draw the number zero.
-![Number Outline Coordinates Image](https://undefined-studios.com/open-source/TetrisClock/images/numberStructure.PNG "Number Outline Coordinates")
+![Number Outline Coordinates Image](https://github.com/m-butler/TetrisClock/blob/master/images/grid.PNG "Number Outline Coordinates")
 ###### B. Randomly Choosing Blocks
 ###### Now that we have our outline coordinates for the desired number, it is time to choose which blocks will populate our digit and in what order. The `sectionPatterns` array contains arrays of arrays that hold 4 tetris block patterns (16 blocks) that can be used. In the image below we can see 10 predefined 4 block squares that are chosen at random to fill a portion of the digit.
-![Block Patterns Image](https://undefined-studios.com/open-source/TetrisClock/images/patterns.PNG "Block Patterns")
+![Block Patterns Image](https://github.com/m-butler/TetrisClock/blob/master/images/patterns.PNG "Block Patterns")
 ###### C. Correctly Placing 4 Block Squares
 ###### Now that we have identified our outline coordinates and randomly chosen a block pattern, we can start to display the digit. We do this by looping over each 16 block square, using the outline coordinate as a reference. This is achieved by differentiating the offset in relation to the outline coordinate and corresponding the resulting index with a position in the chosen section pattern. In the image below, you can see the order in which the 16 block square is transversed.
-![Square Grid Image](https://undefined-studios.com/open-source/TetrisClock/images/grid.PNG "Square Grid")
+![Square Grid Image](https://github.com/m-butler/TetrisClock/blob/master/images/grid.PNG "Square Grid")
 ###### D. Visually Defining Tetris Blocks
 ###### Now that we know where to place the 4 block squares, we can start to visually define the tetris blocks. Each tetris block (which consists of 4 blocks) is given the same color. The color of a tetris block is the result of stepping through the `colors` object. For instance, if the last color used was red, we would then select green, then blue and so on. Once the color list is exhausted, we start back at the beginning. This gives the overall digit a more uniform assortment of colors.
 ###### E. Animating Tetris Blocks
