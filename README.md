@@ -16,7 +16,7 @@
 ###### There are multiple steps that occur when `createElement` is called:
 ###### A. Number Identification
 ###### The entered digit information is retrieved from the `numbers` object. Each property of the object corresponds to a digit 0 - 9 and contains an array of arrays. This data is used to identify "outline coordinates" that will be used to draw a number without knowing each and every one of its 720 coordinates. In the image below, you can see that we only identified 24 coordinates to draw the number zero.
-![Number Outline Coordinates Image](https://github.com/m-butler/TetrisClock/blob/master/images/grid.PNG "Number Outline Coordinates")
+![Number Outline Coordinates Image](https://github.com/m-butler/TetrisClock/blob/master/images/numberStructure.PNG "Number Outline Coordinates")
 ###### B. Randomly Choosing Blocks
 ###### Now that we have our outline coordinates for the desired number, it is time to choose which blocks will populate our digit and in what order. The `sectionPatterns` array contains arrays of arrays that hold 4 tetris block patterns (16 blocks) that can be used. In the image below we can see 10 predefined 4 block squares that are chosen at random to fill a portion of the digit.
 ![Block Patterns Image](https://github.com/m-butler/TetrisClock/blob/master/images/patterns.PNG "Block Patterns")
